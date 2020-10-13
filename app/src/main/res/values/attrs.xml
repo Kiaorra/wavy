@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="UnderlineRippleEditText">
+        <attr name="hint" format="string|reference" />
+        <attr name="inputType" format="enum" />
+        <attr name="maxLines" format="integer" />
+        <attr name="textColor" format="color" />
+        <attr name="textColorHint" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="underlineBaseColor" format="color" />
+        <attr name="underlineAccentColor" format="color" />
+        <attr name="passwordToggleEnabled" format="boolean" />
+    </declare-styleable>
+</resources>
