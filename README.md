@@ -15,5 +15,5 @@ Step 1. Add the JitPack repository to your build file
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:RippleEditText:Tag'
+	        implementation 'com.github.Kiaorra:RippleEditText:1.0.0'
 	}
