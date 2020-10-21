@@ -34,8 +34,9 @@ How do I use RippleEditText?
         app:layout_constraintTop_toTopOf="parent" />
 	
 ### Additional attributes
+- `android:textInput` - 
 
-License
+🤝License
 -------
 
     Copyright 2020 Kiaorra.
