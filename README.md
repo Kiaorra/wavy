@@ -6,7 +6,7 @@
 RippleEditText
 ==============
 
-Download
+Getting start
 --------
 
 Step 1. Add the JitPack repository to your build file
@@ -21,7 +21,7 @@ Step 1. Add the JitPack repository to your build file
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:RippleEditText:1.1.0'
+	        implementation 'com.github.Kiaorra:RippleEditText:1.1.2'
 	}
 
 How do I use RippleEditText?
