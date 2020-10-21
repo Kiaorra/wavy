@@ -10,6 +10,7 @@
         android:id="@+id/til_layoutRippleEditText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:boxBackgroundMode="none"
         app:hintEnabled="false"
         app:layout_constraintBottom_toTopOf="@id/view_baseUnderline"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,7 +21,6 @@
             android:id="@+id/tie_layoutRippleEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
             android:inputType="text"
             android:paddingVertical="14dp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -29,7 +29,7 @@
         android:id="@+id/view_baseUnderline"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -37,8 +37,7 @@
     <View
         android:id="@+id/view_accentUnderline"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/colorAccent"
+        android:layout_height="1dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/view_baseUnderline"
         app:layout_constraintEnd_toEndOf="parent"
