@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="UnderlineRippleEditText">
-        <attr name="hint" format="string|reference" />
-        <attr name="inputType" format="enum" />
-        <attr name="maxLines" format="integer" />
-        <attr name="textColor" format="color" />
-        <attr name="textColorHint" format="color" />
-        <attr name="textSize" format="dimension" />
+    <declare-styleable name="RippleEditText">
+        <attr name="android:enabled" />
+
+        <attr name="android:hint" />
+
+        <attr name="android:inputType" />
+
+        <attr name="android:maxLines" />
+
+        <attr name="android:maxLength" />
+
+        <attr name="android:paddingVertical" />
+
+        <attr name="android:paddingHorizontal" />
+
+        <attr name="android:textColor" />
+
+        <attr name="android:textSize" />
+
+        <attr name="android:textColorHint" />
+
+        <attr name="endIconMode" />
+
         <attr name="underlineBaseColor" format="color" />
+
         <attr name="underlineAccentColor" format="color" />
-        <attr name="passwordToggleEnabled" format="boolean" />
     </declare-styleable>
 </resources>
