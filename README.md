@@ -5,7 +5,7 @@ RippleEditText
 ==============
 
 Download
-========
+--------
 
 Step 1. Add the JitPack repository to your build file
 
@@ -19,12 +19,15 @@ Step 1. Add the JitPack repository to your build file
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:RippleEditText:1.0.0'
+	        implementation 'com.github.Kiaorra:RippleEditText:1.1.0'
 	}
+
+How do I use RippleEditText?
+----------------------------
 
 
 License
-=======
+-------
 
     Copyright 2020 Kiaorra.
 
