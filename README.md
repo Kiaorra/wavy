@@ -6,9 +6,8 @@
 RippleEditText
 ==============
 
-Getting started
+🔧Getting started
 --------
-
 Step 1. Add the JitPack repository to your build file
 
 	allprojects {
@@ -24,7 +23,7 @@ Step 2. Add the dependency
 	        implementation 'com.github.Kiaorra:RippleEditText:1.1.2'
 	}
 
-How do I use RippleEditText?
+🤔How do I use RippleEditText?
 ----------------------------
     <com.kiaorra.RippleEditText
         android:id="@+id/rippleEditText"
@@ -36,7 +35,7 @@ How do I use RippleEditText?
 ### Additional attributes
 - `android:textInput` - 
 
-🤝License
+📃License
 -------
 
     Copyright 2020 Kiaorra.
