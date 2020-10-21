@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.text.InputFilter
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
@@ -140,6 +139,7 @@ class RippleEditText @JvmOverloads constructor(
             )
         )
 
+        /*
         tie_layoutRippleEditText.setTextSize(
             TypedValue.COMPLEX_UNIT_PX,
             typedArray.getDimension(
@@ -147,6 +147,7 @@ class RippleEditText @JvmOverloads constructor(
                 14.0F.toPx
             )
         )
+         */
 
         tie_layoutRippleEditText.setPadding(
             typedArray.getDimension(
