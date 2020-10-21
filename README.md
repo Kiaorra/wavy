@@ -26,7 +26,14 @@ Step 2. Add the dependency
 
 How do I use RippleEditText?
 ----------------------------
-
+    <com.kiaorra.RippleEditText
+        android:id="@+id/rippleEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+	
+### Additional attributes
 
 License
 -------
