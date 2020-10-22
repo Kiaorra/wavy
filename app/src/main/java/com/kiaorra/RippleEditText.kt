@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.layout_ripple_edittext.view.*
 class RippleEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.style.Theme_AppCompat_Light
+    defStyleAttr: Int = R.style.Theme_MaterialComponents
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     private val expandFromX = 0.0F
     private val expandToX = 1.0F

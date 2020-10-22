@@ -4,7 +4,7 @@
     android:id="@+id/cl_layoutRippleEditText"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.AppCompat.Light">
+    android:theme="@style/Theme.MaterialComponents">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_layoutRippleEditText"
@@ -21,6 +21,7 @@
             android:id="@+id/tie_layoutRippleEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@android:color/transparent"
             android:inputType="text"
             android:paddingVertical="14dp" />
     </com.google.android.material.textfield.TextInputLayout>
