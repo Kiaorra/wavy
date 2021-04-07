@@ -12,6 +12,7 @@ import android.view.animation.ScaleAnimation
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.kiaorra.rippleedittext.R
 import kotlinx.android.synthetic.main.layout_ripple_edittext.view.*
 
 @SuppressLint("ClickableViewAccessibility")
@@ -189,12 +190,12 @@ class RippleEditText @JvmOverloads constructor(
             )
         )
 
-        view_accentUnderline.setBackgroundColor(
-            typedArray.getColor(
-                R.styleable.RippleEditText_underlineAccentColor,
-                ContextCompat.getColor(context, R.color.colorAccent)
-            )
-        )
+//        view_accentUnderline.setBackgroundColor(
+//            typedArray.getColor(
+//                R.styleable.RippleEditText_underlineAccentColor,
+//                ContextCompat.getColor(context, R.color.colorAccent)
+//            )
+//        )
 
         typedArray.recycle()
     }
