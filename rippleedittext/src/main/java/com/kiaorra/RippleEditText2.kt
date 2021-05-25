@@ -3,12 +3,8 @@ package com.kiaorra
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.kiaorra.rippleedittext.R
@@ -25,126 +21,140 @@ class RippleEditText2 : androidx.appcompat.widget.AppCompatEditText {
         defStyleAttr
     )
 
-    private var widthWithoutInset: () -> Float = { ->
-        width.toFloat() - resources.getDimension(R.dimen.edit_text_inset_horizontal) * 2
-    }
+    private var underlineYPosition = 0f
 
-    private var underlineWidth: () -> Float = {
-        widthWithoutInset.invoke() - paddingStart - paddingEnd
-    }
+    private var underlinePivotXPosition = 0f
 
-    private var underlineX: () -> Float = {
-        x + paddingStart + resources.getDimension(R.dimen.edit_text_inset_horizontal)
-    }
+    private var originalLength = OriginalLength()
 
-    private var underlineY: () -> Float = {
-        height - resources.getDimension(R.dimen.edit_text_inset_bottom)
-    }
+    private var underlineLength = UnderlineLength()
 
-    private val baselinePaint = Paint().apply {
+    var duration = 400L
+
+    private val paintDefaultLine = Paint().apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2.0f.toPx
+        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
         color = Color.DKGRAY
     }
 
-    private val accentlinePaint = Paint().apply {
+    private val paintAccentLine = Paint().apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2.0f.toPx
+        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
         color = Color.RED
     }
 
-    private var pivotXPos: Float = 0.0f
+    private val underlineLengthAnimation = ValueAnimator.ofFloat(0f, 1f).apply {
+        duration = this@RippleEditText2.duration
 
-    private var originalRemainedLeft: Float = 0.0f
-    private var remainedLeft: Float = 0.0f
+        var animatedValue = 0f
 
-    private var originalRemainedRight: Float = 0.0f
-    private var remainedRight: Float = 0.0f
+        addUpdateListener {
+            animatedValue = it.animatedValue as Float
 
-    private var testBoolean = false
+            underlineLength.apply {
+                defaultLineLeft = originalLength.left * (1f - animatedValue)
+                defaultLineRight = originalLength.right * (1f - animatedValue)
+                accentLineLeft = originalLength.left * animatedValue
+                accentLineRight = originalLength.right * animatedValue
+            }
+
+            invalidate()
+        }
+    }
 
     init {
         background = ContextCompat.getDrawable(context, R.drawable.sample_inset)
     }
 
-    val va1 = ValueAnimator.ofFloat(0.0f, 1.0f).apply {
-        duration = 1000
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        addUpdateListener {
-            Log.d("RippleEditText", "pivot: $pivotXPos")
-            remainedLeft = originalRemainedLeft * animatedValue as Float
-            Log.d("RippleEditText", "left: $remainedLeft")
-            remainedRight = originalRemainedRight * animatedValue as Float
-            Log.d("RippleEditText", "right: $remainedRight")
-            invalidate()
-        }
+        underlineYPosition = initUnderlineYPosition(measuredHeight)
+
+        underlinePivotXPosition = initPivotXPosition(measuredWidth)
+
+        originalLength = initOriginalLineLength(measuredWidth)
+
+        underlineLength = initUnderlineLength(measuredWidth)
     }
+
+    private fun initUnderlineYPosition(height: Int) =
+        height - resources.getDimension(R.dimen.edit_text_inset_bottom)
+
+    private fun initPivotXPosition(width: Int): Float = width / 2f
+
+    private fun initOriginalLineLength(width: Int) =
+        OriginalLength(width / 2f - paddingLeft, width / 2f - paddingRight)
+
+    private fun initUnderlineLength(width: Int) =
+        UnderlineLength(width / 2f - paddingLeft, width / 2f - paddingRight)
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        if (canvas != null) {
-            drawLeftUnderline(canvas, pivotXPos - remainedLeft)
-            drawRightUnderline(canvas, pivotXPos + remainedRight)
-            if (testBoolean == true) drawAccentLine(canvas, pivotXPos - remainedLeft, pivotXPos + remainedRight)
+        canvas?.run {
+            drawBaseline(this, underlineLength.defaultLineLeft, underlineLength.defaultLineRight)
+            drawAccentLine(this, underlineLength.accentLineLeft, underlineLength.accentLineRight)
         }
     }
 
-    private fun drawAccentLine(canvas: Canvas, startX: Float, endX: Float) {
+    private fun drawBaseline(canvas: Canvas, leftLength: Float, rightLength: Float) {
         val path = Path().apply {
-            moveTo(startX, underlineY.invoke())
-            lineTo(endX, underlineY.invoke())
+            moveTo(paddingLeft.toFloat(), underlineYPosition)
+            lineTo(paddingLeft + leftLength, underlineYPosition)
+            close()
+
+            val width = measuredWidth.toFloat()
+
+            moveTo(width - paddingRight, underlineYPosition)
+            lineTo(width - paddingRight - rightLength, underlineYPosition)
             close()
         }
 
-        canvas.drawPath(path, accentlinePaint)
+        canvas.drawPath(path, paintDefaultLine)
     }
 
-    private fun drawLeftUnderline(canvas: Canvas, endX: Float) {
-        val startX = paddingLeft.toFloat()
-
+    private fun drawAccentLine(canvas: Canvas, leftLength: Float, rightLength: Float) {
         val path = Path().apply {
-            moveTo(startX, underlineY.invoke())
-            lineTo(endX, underlineY.invoke())
-            close()
+
         }
 
-        canvas.drawPath(path, baselinePaint)
-    }
-
-    private fun drawRightUnderline(canvas: Canvas, endX: Float) {
-        val startX = width.toFloat() - paddingRight.toFloat()
-
-        val path = Path().apply {
-            moveTo(startX, underlineY.invoke())
-            lineTo(endX, underlineY.invoke())
-            close()
-        }
-
-        canvas.drawPath(path, baselinePaint)
+        canvas.drawPath(path, paintAccentLine)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-
         if (event?.action == MotionEvent.ACTION_DOWN) {
-            //Log.d("RippleEditText", (event.x / width * 100).toString())
-
-            pivotXPos = event.x
-
-            originalRemainedLeft = pivotXPos - paddingLeft
-
-            originalRemainedRight = width - pivotXPos - paddingRight
-
-//            Log.d("RippleEditText", originalRemainedLeft.toString())
-//            Log.d("RippleEditText", originalRemainedRight.toString())
-//            Log.d("RippleEditText", width.toString())
-
-            testBoolean = true
-
-            va1.start()
+            underlinePivotXPosition = event.x
+            requestFocus()
         }
 
         return super.onTouchEvent(event)
     }
+
+    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+        if (focused) {
+            updateOriginalLength(underlinePivotXPosition)
+            underlineLengthAnimation.start()
+        }
+
+        super.onFocusChanged(focused, direction, previouslyFocusedRect)
+    }
+
+    private fun updateOriginalLength(pivotX: Float) {
+        originalLength.left = pivotX + paddingLeft
+        originalLength.right = measuredWidth - pivotX - paddingRight
+    }
+
+    private data class OriginalLength(
+        var left: Float = 0f,
+        var right: Float = 0f
+    )
+
+    private data class UnderlineLength(
+        var defaultLineLeft: Float = 0f,
+        var defaultLineRight: Float = 0f,
+        var accentLineLeft: Float = 0f,
+        var accentLineRight: Float = 0f
+    )
 }
