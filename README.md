@@ -20,7 +20,7 @@ RippleEditText
 #### Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:RippleEditText:1.1.2'
+	        implementation 'com.github.Kiaorra:RippleEditText:2.0.0'
 	}
 
 🤔How do I use RippleEditText?
@@ -38,7 +38,7 @@ RippleEditText
 📃License
 -------
 
-    Copyright 2020 Kiaorra.
+    Copyright 2021 Kiaorra.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
