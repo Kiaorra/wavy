@@ -32,12 +32,14 @@ class RippleEditText2 : androidx.appcompat.widget.AppCompatEditText {
     var duration = 400L
 
     private val paintDefaultLine = Paint().apply {
+        isAntiAlias = true
         style = Paint.Style.STROKE
         strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
         color = Color.DKGRAY
     }
 
     private val paintAccentLine = Paint().apply {
+        isAntiAlias = true
         style = Paint.Style.STROKE
         strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
         color = Color.RED
@@ -100,14 +102,17 @@ class RippleEditText2 : androidx.appcompat.widget.AppCompatEditText {
 
     private fun drawBaseline(canvas: Canvas, leftLength: Float, rightLength: Float) {
         val path = Path().apply {
-            moveTo(paddingLeft.toFloat(), underlineYPosition)
-            lineTo(paddingLeft + leftLength, underlineYPosition)
+
+            val underlineStartX = paddingLeft.toFloat()
+
+            moveTo(underlineStartX, underlineYPosition)
+            lineTo(underlineStartX + leftLength, underlineYPosition)
             close()
 
-            val width = measuredWidth.toFloat()
+            val underlineEndX = (measuredWidth - paddingRight).toFloat()
 
-            moveTo(width - paddingRight, underlineYPosition)
-            lineTo(width - paddingRight - rightLength, underlineYPosition)
+            moveTo(underlineEndX, underlineYPosition)
+            lineTo(underlineEndX - rightLength, underlineYPosition)
             close()
         }
 
@@ -117,6 +122,13 @@ class RippleEditText2 : androidx.appcompat.widget.AppCompatEditText {
     private fun drawAccentLine(canvas: Canvas, leftLength: Float, rightLength: Float) {
         val path = Path().apply {
 
+            moveTo(underlinePivotXPosition, underlineYPosition)
+            lineTo(underlinePivotXPosition - leftLength, underlineYPosition)
+            close()
+
+            moveTo(underlinePivotXPosition, underlineYPosition)
+            lineTo(underlinePivotXPosition + rightLength, underlineYPosition)
+            close()
         }
 
         canvas.drawPath(path, paintAccentLine)
@@ -125,24 +137,31 @@ class RippleEditText2 : androidx.appcompat.widget.AppCompatEditText {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event?.action == MotionEvent.ACTION_DOWN) {
-            underlinePivotXPosition = event.x
-            requestFocus()
+            if (!isFocused) {
+                underlinePivotXPosition = event.x
+                requestFocus()
+            }
+
         }
 
         return super.onTouchEvent(event)
     }
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect)
+
         if (focused) {
             updateOriginalLength(underlinePivotXPosition)
             underlineLengthAnimation.start()
+        } else {
+            underlinePivotXPosition = initPivotXPosition(measuredWidth)
+            updateOriginalLength(underlinePivotXPosition)
+            underlineLengthAnimation.reverse()
         }
-
-        super.onFocusChanged(focused, direction, previouslyFocusedRect)
     }
 
     private fun updateOriginalLength(pivotX: Float) {
-        originalLength.left = pivotX + paddingLeft
+        originalLength.left = pivotX - paddingLeft
         originalLength.right = measuredWidth - pivotX - paddingRight
     }
 
