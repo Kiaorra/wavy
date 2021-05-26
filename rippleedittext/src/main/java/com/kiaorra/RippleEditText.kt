@@ -1,206 +1,179 @@
 package com.kiaorra
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.TypedArray
-import android.text.InputFilter
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
-import android.view.inputmethod.EditorInfo
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.kiaorra.rippleedittext.R
-import kotlinx.android.synthetic.main.layout_ripple_edittext.view.*
 
-@SuppressLint("ClickableViewAccessibility")
-class RippleEditText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.style.Theme_MaterialComponents
-) : ConstraintLayout(context, attrs, defStyleAttr) {
-    private val expandFromX = 0.0F
-    private val expandToX = 1.0F
-    private val expandFromY = 1.0F
-    private val expandToY = 1.0F
+class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
 
-    private val reduceFromX = 1.0F
-    private val reduceToX = 0.0F
-    private val reduceFromY = 1.0F
-    private val reduceToY = 1.0F
+    constructor(context: Context) : super(context)
 
-    private var pivotXPos = 0.0F
-    private val pivotYPos = 0.0F
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    private var duration = 300L
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
-    private lateinit var scaleAnimation: ScaleAnimation
+    private var underlineYPosition = 0f
+
+    private var underlinePivotXPosition = 0f
+
+    private var originalLength = OriginalLength()
+
+    private var underlineLength = UnderlineLength()
+
+    var duration = 400L
+
+    private val paintDefaultLine = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
+        color = Color.DKGRAY
+    }
+
+    private val paintAccentLine = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
+        color = Color.RED
+    }
+
+    private val underlineLengthAnimation = ValueAnimator.ofFloat(0f, 1f).apply {
+        duration = this@RippleEditText.duration
+
+        var animatedValue = 0f
+
+        addUpdateListener {
+            animatedValue = it.animatedValue as Float
+
+            underlineLength.apply {
+                defaultLineLeft = originalLength.left * (1f - animatedValue)
+                defaultLineRight = originalLength.right * (1f - animatedValue)
+                accentLineLeft = originalLength.left * animatedValue
+                accentLineRight = originalLength.right * animatedValue
+            }
+
+            invalidate()
+        }
+    }
 
     init {
-        inflate(context, R.layout.layout_ripple_edittext, this)
-
-        setupListeners()
-
-        getAttrs(attrs, defStyleAttr)
+        background = ContextCompat.getDrawable(context, R.drawable.sample_inset)
     }
 
-    private fun setupListeners() {
-        tie_layoutRippleEditText.setOnTouchListener { view, event ->
-            pivotXPos =
-                if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_UP) {
-                    event.x
-                } else {
-                    view.width / 2.0F
-                }
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-            false
+        underlineYPosition = initUnderlineYPosition(measuredHeight)
+
+        underlinePivotXPosition = initPivotXPosition(measuredWidth)
+
+        originalLength = initOriginalLineLength(measuredWidth)
+
+        underlineLength = initUnderlineLength(measuredWidth)
+    }
+
+    private fun initUnderlineYPosition(height: Int) =
+        height - resources.getDimension(R.dimen.edit_text_inset_bottom)
+
+    private fun initPivotXPosition(width: Int): Float = width / 2f
+
+    private fun initOriginalLineLength(width: Int) =
+        OriginalLength(width / 2f - paddingLeft, width / 2f - paddingRight)
+
+    private fun initUnderlineLength(width: Int) =
+        UnderlineLength(width / 2f - paddingLeft, width / 2f - paddingRight)
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+
+        canvas?.run {
+            drawBaseline(this, underlineLength.defaultLineLeft, underlineLength.defaultLineRight)
+            drawAccentLine(this, underlineLength.accentLineLeft, underlineLength.accentLineRight)
+        }
+    }
+
+    private fun drawBaseline(canvas: Canvas, leftLength: Float, rightLength: Float) {
+        val path = Path().apply {
+
+            val underlineStartX = paddingLeft.toFloat()
+
+            moveTo(underlineStartX, underlineYPosition)
+            lineTo(underlineStartX + leftLength, underlineYPosition)
+            close()
+
+            val underlineEndX = (measuredWidth - paddingRight).toFloat()
+
+            moveTo(underlineEndX, underlineYPosition)
+            lineTo(underlineEndX - rightLength, underlineYPosition)
+            close()
         }
 
-        tie_layoutRippleEditText.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {
-                scaleAnimation = ScaleAnimation(
-                    expandFromX,
-                    expandToX,
-                    expandFromY,
-                    expandToY,
-                    if (pivotXPos == 0.0F) view.width / 2.0F else pivotXPos,
-                    pivotYPos
-                ).also {
-                    it.duration = this.duration
-                }
+        canvas.drawPath(path, paintDefaultLine)
+    }
 
-                view_accentUnderline.startAnimation(scaleAnimation)
-                view_accentUnderline.visibility = View.VISIBLE
-            } else {
-                scaleAnimation =
-                    ScaleAnimation(
-                        reduceFromX,
-                        reduceToX,
-                        reduceFromY,
-                        reduceToY,
-                        view.width / 2.0F,
-                        pivotYPos
-                    ).also {
-                        it.duration = this.duration
-                        it.setAnimationListener(object : Animation.AnimationListener {
-                            override fun onAnimationStart(animation: Animation?) {
-                            }
+    private fun drawAccentLine(canvas: Canvas, leftLength: Float, rightLength: Float) {
+        val path = Path().apply {
 
-                            override fun onAnimationEnd(animation: Animation?) {
-                                view_accentUnderline.visibility = View.INVISIBLE
-                            }
+            moveTo(underlinePivotXPosition, underlineYPosition)
+            lineTo(underlinePivotXPosition - leftLength, underlineYPosition)
+            close()
 
-                            override fun onAnimationRepeat(animation: Animation?) {
-                            }
-                        })
-                    }
+            moveTo(underlinePivotXPosition, underlineYPosition)
+            lineTo(underlinePivotXPosition + rightLength, underlineYPosition)
+            close()
+        }
 
-                view_accentUnderline.startAnimation(scaleAnimation)
+        canvas.drawPath(path, paintAccentLine)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event?.action == MotionEvent.ACTION_DOWN) {
+            if (!isFocused) {
+                underlinePivotXPosition = event.x
+                requestFocus()
             }
+
+        }
+
+        return super.onTouchEvent(event)
+    }
+
+    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect)
+
+        if (focused) {
+            updateOriginalLength(underlinePivotXPosition)
+            underlineLengthAnimation.start()
+        } else {
+            underlinePivotXPosition = initPivotXPosition(measuredWidth)
+            updateOriginalLength(underlinePivotXPosition)
+            underlineLengthAnimation.reverse()
         }
     }
 
-    private fun getAttrs(attrs: AttributeSet?, defStyleAttr: Int) {
-        setTypedArray(
-            context.obtainStyledAttributes(
-                attrs,
-                R.styleable.RippleEditText,
-                defStyleAttr,
-                0
-            )
-        )
+    private fun updateOriginalLength(pivotX: Float) {
+        originalLength.left = pivotX - paddingLeft
+        originalLength.right = measuredWidth - pivotX - paddingRight
     }
 
-    private fun setTypedArray(typedArray: TypedArray) {
-        tie_layoutRippleEditText.isEnabled =
-            typedArray.getBoolean(R.styleable.RippleEditText_android_enabled, true)
+    private data class OriginalLength(
+        var left: Float = 0f,
+        var right: Float = 0f
+    )
 
-        tie_layoutRippleEditText.hint =
-            typedArray.getString(R.styleable.RippleEditText_android_hint)
-
-        tie_layoutRippleEditText.inputType =
-            typedArray.getInt(
-                R.styleable.RippleEditText_android_inputType,
-                EditorInfo.TYPE_CLASS_TEXT
-            )
-
-        tie_layoutRippleEditText.setTextColor(
-            typedArray.getColor(
-                R.styleable.RippleEditText_android_textColor,
-                ContextCompat.getColor(context, android.R.color.black)
-            )
-        )
-
-        tie_layoutRippleEditText.setHintTextColor(
-            typedArray.getColor(
-                R.styleable.RippleEditText_android_textColorHint,
-                ContextCompat.getColor(context, android.R.color.darker_gray)
-            )
-        )
-
-        /*
-        tie_layoutRippleEditText.setTextSize(
-            TypedValue.COMPLEX_UNIT_PX,
-            typedArray.getDimension(
-                R.styleable.RippleEditText_android_textSize,
-                14.0F.toPx
-            )
-        )
-         */
-
-        tie_layoutRippleEditText.setPadding(
-            typedArray.getDimension(
-                R.styleable.RippleEditText_android_paddingHorizontal,
-                0.0F.toPx
-            ).toInt(),
-            typedArray.getDimension(
-                R.styleable.RippleEditText_android_paddingVertical,
-                14.0F.toPx
-            ).toInt(),
-            typedArray.getDimension(
-                R.styleable.RippleEditText_android_paddingHorizontal,
-                0.0F.toPx
-            ).toInt(),
-            typedArray.getDimension(
-                R.styleable.RippleEditText_android_paddingVertical,
-                14.0F.toPx
-            ).toInt()
-        )
-
-        tie_layoutRippleEditText.maxLines =
-            typedArray.getInteger(R.styleable.RippleEditText_android_maxLines, Integer.MAX_VALUE)
-
-        tie_layoutRippleEditText.filters = listOf<InputFilter>(
-            InputFilter.LengthFilter(
-                typedArray.getInt(
-                    R.styleable.RippleEditText_android_maxLength, Integer.MAX_VALUE
-                )
-            )
-        ).toTypedArray()
-
-        til_layoutRippleEditText.endIconMode =
-            typedArray.getInteger(R.styleable.RippleEditText_endIconMode, 0)
-
-        view_baseUnderline.setBackgroundColor(
-            typedArray.getColor(
-                R.styleable.RippleEditText_underlineBaseColor,
-                ContextCompat.getColor(context, android.R.color.darker_gray)
-            )
-        )
-
-//        view_accentUnderline.setBackgroundColor(
-//            typedArray.getColor(
-//                R.styleable.RippleEditText_underlineAccentColor,
-//                ContextCompat.getColor(context, R.color.colorAccent)
-//            )
-//        )
-
-        typedArray.recycle()
-    }
-
-    override fun setEnabled(isEnabled: Boolean) {
-        tie_layoutRippleEditText.isEnabled = isEnabled
-    }
+    private data class UnderlineLength(
+        var defaultLineLeft: Float = 0f,
+        var defaultLineRight: Float = 0f,
+        var accentLineLeft: Float = 0f,
+        var accentLineRight: Float = 0f
+    )
 }
