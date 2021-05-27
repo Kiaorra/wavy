@@ -33,7 +33,11 @@ RippleEditText
         app:layout_constraintTop_toTopOf="parent" />
 	
 ### Additional attributes
-- `android:textInput` - 
+- `app:accentLineColor` :  Color of underline when editText is focused.
+- `app:defaultLineColor` : Color of underline when editText is not focused.
+- `app:duration` : Amount of time (in milliseconds) to display this frame.
+- `app:interpolator` : Sets the acceleration curve for the indeterminate animation. Defaults to a linear interpolation.
+- `app:underlineWidth` : Stroke width of the underline.
 
 📃License
 -------
