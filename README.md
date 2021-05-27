@@ -5,6 +5,9 @@
 
 RippleEditText
 ==============
+<h1 align="center"> 
+<img src="/rippleedittext.gif?raw=true" alt="RippleEditText" align="center"/>
+</h1>
 
 🔧Getting started
 --------
