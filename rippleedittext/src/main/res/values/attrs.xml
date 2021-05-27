@@ -1,30 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RippleEditText">
-        <attr name="android:enabled" />
 
-        <attr name="android:hint" />
+        <attr name="accentLineColor" format="color" />
 
-        <attr name="android:inputType" />
+        <attr name="defaultLineColor" format="color" />
 
-        <attr name="android:maxLines" />
+        <attr name="duration" format="integer" />
 
-        <attr name="android:maxLength" />
+        <attr name="interpolator" format="reference" />
 
-        <attr name="android:paddingVertical" />
-
-        <attr name="android:paddingHorizontal" />
-
-        <attr name="android:textColor" />
-
-        <attr name="android:textSize" />
-
-        <attr name="android:textColorHint" />
-
-        <attr name="endIconMode" />
-
-        <attr name="underlineBaseColor" format="color" />
-
-        <attr name="underlineAccentColor" format="color" />
+        <attr name="underlineWidth" format="dimension" />
     </declare-styleable>
 </resources>

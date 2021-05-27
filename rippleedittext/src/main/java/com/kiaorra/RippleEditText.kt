@@ -3,23 +3,33 @@ package com.kiaorra
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.content.res.TypedArray
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.animation.AnimationUtils
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.kiaorra.rippleedittext.R
 
-class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
+class RippleEditText : AppCompatEditText {
 
-    constructor(context: Context) : super(context)
+    var duration = 200
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    var interpolator: Interpolator = LinearInterpolator()
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    )
+    var defaultLineColor = ContextCompat.getColor(context, android.R.color.black)
+
+    var accentLineColor = ContextCompat.getColor(context, android.R.color.holo_purple)
+
+    var underlineWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
+
+    private var hasInitialized = false
 
     private var underlineYPosition = 0f
 
@@ -29,55 +39,131 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
 
     private var underlineLength = UnderlineLength()
 
-    var duration = 400L
+    private val defaultLinePath = Path()
 
-    private val paintDefaultLine = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
-        color = Color.DKGRAY
+    private val accentLinePath = Path()
+
+    private lateinit var defaultLinePaint: Paint
+
+    private lateinit var accentLinePaint: Paint
+
+    private lateinit var underlineLengthAnimation: ValueAnimator
+
+    constructor(context: Context) : super(context) {
+        getAttrs()
+        initVariables()
     }
 
-    private val paintAccentLine = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        strokeWidth = resources.getDimension(R.dimen.edit_text_underline_stroke_width)
-        color = Color.RED
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        getAttrs(attrs)
+        initVariables()
     }
 
-    private val underlineLengthAnimation = ValueAnimator.ofFloat(0f, 1f).apply {
-        duration = this@RippleEditText.duration
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        getAttrs(attrs, defStyleAttr)
+        initVariables()
+    }
 
-        var animatedValue = 0f
+    private fun getAttrs(attrs: AttributeSet? = null, defStyleAttr: Int = 0) {
+        setTypedArray(
+            context.obtainStyledAttributes(
+                attrs,
+                R.styleable.RippleEditText,
+                defStyleAttr,
+                0
+            )
+        )
+    }
 
-        addUpdateListener {
-            animatedValue = it.animatedValue as Float
+    private fun setTypedArray(typedArray: TypedArray) {
+        for (i in 0..typedArray.indexCount) {
+            when (val attr = typedArray.getIndex(i)) {
+                R.styleable.RippleEditText_accentLineColor -> accentLineColor =
+                    typedArray.getColor(attr, accentLineColor)
 
-            underlineLength.apply {
-                defaultLineLeft = originalLength.left * (1f - animatedValue)
-                defaultLineRight = originalLength.right * (1f - animatedValue)
-                accentLineLeft = originalLength.left * animatedValue
-                accentLineRight = originalLength.right * animatedValue
+                R.styleable.RippleEditText_defaultLineColor -> defaultLineColor =
+                    typedArray.getColor(attr, defaultLineColor)
+
+                R.styleable.RippleEditText_duration -> duration =
+                    typedArray.getInteger(attr, duration)
+
+                R.styleable.RippleEditText_interpolator -> interpolator =
+                    AnimationUtils.loadInterpolator(
+                        context,
+                        typedArray.getResourceId(attr, android.R.anim.linear_interpolator)
+                    )
+
+                R.styleable.RippleEditText_underlineWidth -> underlineWidth =
+                    typedArray.getDimension(attr, underlineWidth)
             }
-
-            invalidate()
         }
+
+        typedArray.recycle()
     }
 
-    init {
-        background = ContextCompat.getDrawable(context, R.drawable.sample_inset)
+    private fun initVariables() {
+        defaultLinePaint = getInitializedDefaultLinePaint(defaultLineColor, underlineWidth)
+
+        accentLinePaint = getInitializedAccentLinePaint(accentLineColor, underlineWidth)
+
+        underlineLengthAnimation = getInitializedAnimation(duration, interpolator)
+
+        background = ContextCompat.getDrawable(context, R.drawable.ripple_edittext_inset)
     }
+
+    private fun getInitializedDefaultLinePaint(color: Int, strokeWidth:Float): Paint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        this.strokeWidth = strokeWidth
+        this.color = color
+    }
+
+    private fun getInitializedAccentLinePaint(color: Int, strokeWidth:Float): Paint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        this.strokeWidth = strokeWidth
+        this.color = color
+    }
+
+    private fun getInitializedAnimation(duration: Int, interpolator: Interpolator): ValueAnimator =
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            this.duration = duration.toLong()
+            this.interpolator = interpolator
+
+            var animatedValue: Float
+
+            addUpdateListener {
+                animatedValue = it.animatedValue as Float
+
+                underlineLength.apply {
+                    defaultLineLeft = originalLength.left * (1f - animatedValue)
+                    defaultLineRight = originalLength.right * (1f - animatedValue)
+                    accentLineLeft = originalLength.left * animatedValue
+                    accentLineRight = originalLength.right * animatedValue
+                }
+
+                invalidate()
+            }
+        }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         underlineYPosition = initUnderlineYPosition(measuredHeight)
 
-        underlinePivotXPosition = initPivotXPosition(measuredWidth)
+        if (!hasInitialized) {
+            hasInitialized = true
 
-        originalLength = initOriginalLineLength(measuredWidth)
+            underlinePivotXPosition = initPivotXPosition(measuredWidth)
 
-        underlineLength = initUnderlineLength(measuredWidth)
+            originalLength = initOriginalLineLength(measuredWidth)
+
+            underlineLength = initUnderlineLength(measuredWidth)
+        }
     }
 
     private fun initUnderlineYPosition(height: Int) =
@@ -95,14 +181,28 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
         super.onDraw(canvas)
 
         canvas?.run {
-            drawBaseline(this, underlineLength.defaultLineLeft, underlineLength.defaultLineRight)
-            drawAccentLine(this, underlineLength.accentLineLeft, underlineLength.accentLineRight)
+            drawDefaultLine(
+                this,
+                defaultLinePaint,
+                underlineLength.defaultLineLeft,
+                underlineLength.defaultLineRight
+            )
+            drawAccentLine(
+                this,
+                accentLinePaint,
+                underlineLength.accentLineLeft,
+                underlineLength.accentLineRight
+            )
         }
     }
 
-    private fun drawBaseline(canvas: Canvas, leftLength: Float, rightLength: Float) {
-        val path = Path().apply {
-
+    private fun drawDefaultLine(
+        canvas: Canvas,
+        paint: Paint,
+        leftLength: Float,
+        rightLength: Float
+    ) {
+        defaultLinePath.apply {
             val underlineStartX = paddingLeft.toFloat()
 
             moveTo(underlineStartX, underlineYPosition)
@@ -114,14 +214,20 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
             moveTo(underlineEndX, underlineYPosition)
             lineTo(underlineEndX - rightLength, underlineYPosition)
             close()
-        }
 
-        canvas.drawPath(path, paintDefaultLine)
+            canvas.drawPath(this, paint)
+
+            reset()
+        }
     }
 
-    private fun drawAccentLine(canvas: Canvas, leftLength: Float, rightLength: Float) {
-        val path = Path().apply {
-
+    private fun drawAccentLine(
+        canvas: Canvas,
+        paint: Paint,
+        leftLength: Float,
+        rightLength: Float
+    ) {
+        accentLinePath.apply {
             moveTo(underlinePivotXPosition, underlineYPosition)
             lineTo(underlinePivotXPosition - leftLength, underlineYPosition)
             close()
@@ -129,9 +235,11 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
             moveTo(underlinePivotXPosition, underlineYPosition)
             lineTo(underlinePivotXPosition + rightLength, underlineYPosition)
             close()
-        }
 
-        canvas.drawPath(path, paintAccentLine)
+            canvas.drawPath(this, paint)
+
+            reset()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -141,7 +249,6 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
                 underlinePivotXPosition = event.x
                 requestFocus()
             }
-
         }
 
         return super.onTouchEvent(event)
@@ -154,8 +261,10 @@ class RippleEditText : androidx.appcompat.widget.AppCompatEditText {
             updateOriginalLength(underlinePivotXPosition)
             underlineLengthAnimation.start()
         } else {
-            underlinePivotXPosition = initPivotXPosition(measuredWidth)
-            updateOriginalLength(underlinePivotXPosition)
+            if (!underlineLengthAnimation.isRunning) {
+                underlinePivotXPosition = initPivotXPosition(measuredWidth)
+                updateOriginalLength(underlinePivotXPosition)
+            }
             underlineLengthAnimation.reverse()
         }
     }
