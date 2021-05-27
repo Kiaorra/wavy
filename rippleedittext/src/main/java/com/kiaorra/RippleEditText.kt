@@ -17,6 +17,21 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.kiaorra.rippleedittext.R
 
+/**
+ *  Copyright 2021 Kiaorra.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 class RippleEditText : AppCompatEditText {
 
     var duration = 200
@@ -115,19 +130,21 @@ class RippleEditText : AppCompatEditText {
         background = ContextCompat.getDrawable(context, R.drawable.ripple_edittext_inset)
     }
 
-    private fun getInitializedDefaultLinePaint(color: Int, strokeWidth:Float): Paint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        this.strokeWidth = strokeWidth
-        this.color = color
-    }
+    private fun getInitializedDefaultLinePaint(color: Int, strokeWidth: Float): Paint =
+        Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+            this.color = color
+        }
 
-    private fun getInitializedAccentLinePaint(color: Int, strokeWidth:Float): Paint = Paint().apply {
-        isAntiAlias = true
-        style = Paint.Style.STROKE
-        this.strokeWidth = strokeWidth
-        this.color = color
-    }
+    private fun getInitializedAccentLinePaint(color: Int, strokeWidth: Float): Paint =
+        Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+            this.color = color
+        }
 
     private fun getInitializedAnimation(duration: Int, interpolator: Interpolator): ValueAnimator =
         ValueAnimator.ofFloat(0f, 1f).apply {
