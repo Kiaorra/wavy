@@ -17,7 +17,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.kiaorra.rippleedittext.R
 
-/**
+/*
  *  Copyright 2021 Kiaorra.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
