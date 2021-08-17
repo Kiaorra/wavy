@@ -50,7 +50,7 @@ class RippleEditText : AppCompatEditText {
 
     private var underlinePivotXPosition = 0f
 
-    private var originalLength = OriginalLength()
+    private var originalLength = OriginalUnderlineLength()
 
     private var underlineLength = UnderlineLength()
 
@@ -189,7 +189,7 @@ class RippleEditText : AppCompatEditText {
     private fun initPivotXPosition(width: Int): Float = width / 2f
 
     private fun initOriginalLineLength(width: Int) =
-        OriginalLength(width / 2f - paddingLeft, width / 2f - paddingRight)
+        OriginalUnderlineLength(width / 2f - paddingLeft, width / 2f - paddingRight)
 
     private fun initUnderlineLength(width: Int) =
         UnderlineLength(width / 2f - paddingLeft, width / 2f - paddingRight)
@@ -290,16 +290,4 @@ class RippleEditText : AppCompatEditText {
         originalLength.left = pivotX - paddingLeft
         originalLength.right = measuredWidth - pivotX - paddingRight
     }
-
-    private data class OriginalLength(
-        var left: Float = 0f,
-        var right: Float = 0f
-    )
-
-    private data class UnderlineLength(
-        var defaultLineLeft: Float = 0f,
-        var defaultLineRight: Float = 0f,
-        var accentLineLeft: Float = 0f,
-        var accentLineRight: Float = 0f
-    )
 }
