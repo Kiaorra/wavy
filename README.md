@@ -24,7 +24,7 @@ RippleEditText
 	        implementation 'com.github.Kiaorra:RippleEditText:2.0.0'
 	}
 
-🤔How do I use RippleEditText?
+🤔 How do I use RippleEditText?
 ----------------------------
     <com.kiaorra.RippleEditText
         android:id="@+id/rippleEditText"
@@ -40,7 +40,7 @@ RippleEditText
 - `app:interpolator` : Sets the acceleration curve for the indeterminate animation. Defaults to a linear interpolation.
 - `app:underlineWidth` : Stroke width of the underline.
 
-📃License
+📃 License
 -------
 
     Copyright 2021 Kiaorra.
