@@ -7,7 +7,7 @@ RippleEditText
 ==============
 <img src="/sample.gif?raw=true" alt="RippleEditText" />
 
-🔧Getting started
+🔧 Getting started
 --------
 #### Step 1. Add the JitPack repository to your build file
 
