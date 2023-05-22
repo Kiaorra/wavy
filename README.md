@@ -1,11 +1,11 @@
-[![](https://jitpack.io/v/Kiaorra/RippleEditText.svg)](https://jitpack.io/#Kiaorra/RippleEditText)
+[![](https://jitpack.io/v/Kiaorra/Wavy.svg)](https://jitpack.io/#Kiaorra/Wavy)
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-RippleEditText
+Wavy
 ==============
-<img src="/sample.gif?raw=true" alt="RippleEditText" />
+<img src="/sample.gif?raw=true" alt="Wavy" />
 
 🔧 Getting started
 --------
@@ -21,13 +21,13 @@ RippleEditText
 #### Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:RippleEditText:2.0.0'
+	        implementation 'com.github.Kiaorra:Wavy:2.0.0'
 	}
 
-🤔 How do I use RippleEditText?
+🤔 How do I use Wavy?
 ----------------------------
-    <com.kiaorra.RippleEditText
-        android:id="@+id/rippleEditText"
+    <com.kiaorra.wavy
+        android:id="@+id/wavy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
