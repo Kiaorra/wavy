@@ -3,7 +3,7 @@
 [![API](https://img.shields.io/badge/API-21%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-Wavy
+wavy
 ==============
 <img src="/sample.gif?raw=true" alt="Wavy" />
 
@@ -21,12 +21,12 @@ Wavy
 #### Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.Kiaorra:Wavy:2.0.0'
+	        implementation 'com.github.Kiaorra:wavy:2.0.0'
 	}
 
-🤔 How do I use Wavy?
+🤔 How do I use wavy?
 ----------------------------
-    <com.kiaorra.wavy
+    <wavy.EditText
         android:id="@+id/wavy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
