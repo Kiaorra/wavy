@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun EditText (
+fun ComposeEditText (
     text: String,
     modifier: Modifier,
     onTextChanged: (String) -> Unit,
