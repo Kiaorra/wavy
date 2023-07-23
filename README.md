@@ -87,7 +87,7 @@ Wavy(
 
 ### Composable attributes
 ```kotlin
-// Wavy Example
+// Wavy Composable Example
 
 Wavy(
     text = text,
