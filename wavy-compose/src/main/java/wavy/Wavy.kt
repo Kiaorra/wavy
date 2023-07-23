@@ -1,10 +1,14 @@
 package wavy
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 
 /*
@@ -30,13 +34,26 @@ fun Wavy(
     focusRequester: FocusRequester,
     modifier: Modifier,
     onTextChanged: (String) -> Unit,
+    animationSpec: AnimationSpec<Float> = tween(1000),
+    accentLineColor: Color = Color(0xFFEF00FF),
+    accentLineStrokeWidth: Dp = 1.dp,
+    accentLineYPositionFromBottom: Dp = 1.dp,
+    defaultLineColor: Color = Color(0xFF000000),
+    defaultLineStrokeWidth: Dp = 1.dp,
+    defaultLineYPositionFromBottom: Dp = 1.dp
 ) {
     BasicTextField(
         modifier = modifier
             .basicWavyMovement(
                 focusRequester = focusRequester,
                 scope = scope,
-                animationSpec = tween(1000)
+                animationSpec = animationSpec,
+                accentLineColor = accentLineColor,
+                accentLineStrokeWidth = accentLineStrokeWidth,
+                accentLineYPositionFromBottom = accentLineYPositionFromBottom,
+                defaultLineColor = defaultLineColor,
+                defaultLineStrokeWidth = defaultLineStrokeWidth,
+                defaultLineYPositionFromBottom = defaultLineYPositionFromBottom
             ),
         value = text,
         onValueChange = onTextChanged,
