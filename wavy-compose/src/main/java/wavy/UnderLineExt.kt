@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 fun drawAccentLine(
     contentDrawScope: ContentDrawScope,
