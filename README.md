@@ -11,34 +11,114 @@ wavy
 --------
 #### Step 1. Add the JitPack repository to your build file
 
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+```gradle
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
+```
   
 #### Step 2. Add the dependency
 
-	dependencies {
-	        implementation 'com.github.Kiaorra:wavy:2.0.0'
-	}
+```gradle
+dependencies {
+	implementation 'com.github.Kiaorra:wavy:2.0.0'
+}
+```
 
 🤔 How do I use wavy?
 ----------------------------
+```xml
     <wavy.EditText
         android:id="@+id/wavy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-	
+```
+
 ### Additional attributes
+
 - `app:accentLineColor` :  Color of underline when editText is focused.
+
 - `app:defaultLineColor` : Color of underline when editText is not focused.
+
 - `app:duration` : Amount of time (in milliseconds) to display this frame.
+
 - `app:interpolator` : Sets the acceleration curve for the indeterminate animation. Defaults to a linear interpolation.
+
 - `app:underlineWidth` : Stroke width of the underline.
+
+🌊 Wavy in Compose Jetpack
+----------------------------
+Wavy allows you to display tooltips in Jetpack Compose easily.
+
+Add the dependency below to your **module**'s `build.gradle` file:
+
+```gradle
+dependencies {
+	implementation 'com.github.Kiaorra:wavy-compose:2.0.0'
+}
+```
+
+### Wavy Composable
+
+```kotlin
+
+var text by remember { mutableStateOf("") }
+
+val scope = rememberCoroutineScope()
+
+val focusManager = LocalFocusManager.current
+
+val focusRequester by remember { mutableStateOf(FocusRequester()) }
+
+Wavy(
+    text = text,
+    scope = scope,
+    focusRequester = focusRequester,
+    modifier = Modifier,
+    onTextChanged = { text = it },
+    ..
+)
+```
+
+### Composable attributes
+```kotlin
+// Wavy Composable Example
+
+Wavy(
+    text = text,
+    scope = scope,
+    focusRequester = focusRequester,
+    modifier = Modifier,
+    onTextChanged = { text = it },
+    animationSpec: AnimationSpec<Float> = tween(1000),
+    accentLineColor: Color = Color(0xFFEF00FF) // purple
+    accentLineStrokeWidth: Dp = 1.dp,
+    accentLineYPositionFromBottom: Dp = 1.dp,
+    defaultLineColor: Color = Color(0xFF000000), // black
+    defaultLineStrokeWidth: Dp = 1.dp,
+    defaultLineYPositionFromBottom: Dp = 1.dp
+)
+```
+
+
+- `animationSpec`: Animation Spec of wavy ex) spread speed, spread effect etc..
+  
+- `accentLineColor` :  Color of underline when editText is focused.
+
+- `accentLineStrokeWidth`: Width of underline when editText is focused.
+  
+- `accentLineYPositionFromBottom`: Y Position of accentLine
+
+- `defaultLineColor` : Color of underline when editText is not focused.
+
+- `defaultLineStrokeWidth`: Width of underline when editText is not focused.
+
+- `defaultLineYPositionFromBottom`: Y Position of defaultLine
 
 📃 License
 -------

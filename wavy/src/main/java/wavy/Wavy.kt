@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-class EditText : AppCompatEditText {
+class Wavy : AppCompatEditText {
 
     var duration = 200
 

@@ -26,13 +26,13 @@ import kotlinx.coroutines.CoroutineScope
 fun Modifier.basicWavyMovement(
     scope: CoroutineScope,
     focusRequester: FocusRequester,
-    animationSpec: AnimationSpec<Float> = tween(1000),
-    accentLineColor: Color = Color(0xFFEF00FF),
-    accentLineStrokeWidth: Dp = 1.dp,
-    accentLineYPositionFromBottom: Dp = 1.dp,
-    defaultLineColor: Color = Color(0xFF000000),
-    defaultLineStrokeWidth: Dp = 1.dp,
-    defaultLineYPositionFromBottom: Dp = 1.dp
+    animationSpec: AnimationSpec<Float>,
+    accentLineColor: Color,
+    accentLineStrokeWidth: Dp,
+    accentLineYPositionFromBottom: Dp,
+    defaultLineColor: Color,
+    defaultLineStrokeWidth: Dp,
+    defaultLineYPositionFromBottom: Dp
  ): Modifier = composed {
 
     var underLineWidth by remember { mutableStateOf(0f) }
